@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Color Identify Model</title>
+    <title>Teachable Machine Image Model</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <link rel="stylesheet" href="styles.css">
@@ -12,51 +12,51 @@
     <h1>Color Identify Modell</h1>
     <button type="button" onclick="init()">Start</button>
     <button type="button" onclick="stopWebcam()">Stop</button>
-    <div id="webcam-container"></div>
+    <input type="file" id="image-upload" accept="image/*" onchange="handleImage(event)">
+    <div id="image-container"></div>
     <div id="label-container"></div>
 
     <script type="text/javascript">
         const URL = "https://teachablemachine.withgoogle.com/models/tDSvJj8yn/";
 
-let model, labelContainer, maxPredictions;
+        let model, labelContainer, maxPredictions;
 
-document.addEventListener("DOMContentLoaded", async () => {
-    const modelURL = URL + "model.json";
-    const metadataURL = URL + "metadata.json";
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
 
-    // Load the model and metadata
-    model = await tmImage.load(modelURL, metadataURL);
-    maxPredictions = model.getTotalClasses();
+            // Load the model
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
 
-    labelContainer = document.getElementById("label-container");
+            // Set up label container
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.appendChild(document.createElement("div"));
+            }
+        }
 
-    // Create container to display prediction labels
-    for (let i = 0; i < maxPredictions; i++) {
-        labelContainer.appendChild(document.createElement("div"));
-    }
+        async function handleImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
 
-    // Add event listener for image upload
-    const imageUpload = document.getElementById("imageUpload");
-    imageUpload.addEventListener("change", async (event) => {
-        const file = event.target.files[0];
-        if (!file) return;
+            const img = document.createElement("img");
+            img.src = URL.createObjectURL(file);
+            img.onload = async function() {
+                document.getElementById("image-container").innerHTML = "";
+                document.getElementById("image-container").appendChild(img);
 
-        const img = document.createElement('img');
-        img.src = URL.createObjectURL(file);
-        img.onload = async () => {
-            URL.revokeObjectURL(img.src);  // Release memory once image is loaded
-            await predict(img);
-        };
-    });
-});
+                // Predict the image
+                const prediction = await model.predict(img);
+                for (let i = 0; i < maxPredictions; i++) {
+                    const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                    labelContainer.childNodes[i].innerHTML = classPrediction;
+                }
+            };
+        }
 
-// Run the image through the image model and predict the label
-async function predict(image) {
-    const prediction = await model.predict(image);
-    for (let i = 0; i < maxPredictions; i++) {
-        const classPrediction =
-            prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-        labelContainer.childNodes[i].innerHTML = classPrediction;
-    }
-}
-    
+        // Initialize the model when the page loads
+        window.onload = init;
+    </script>
+</body>
+</html>
