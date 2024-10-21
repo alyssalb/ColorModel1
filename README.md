@@ -11,8 +11,7 @@ This web application allows users to upload an image and identify the main color
 
 ## Project Structure
 
-- `index.html` - The main HTML file.
-- `script.js` - JavaScript to handle loading the model and making predictions.
+- `index.html` - The main HTML file, includes JavaScript to handle loading the model and making predictions.
 - `styles.css` - CSS for styling the web application.
 
 ## Prerequisites
