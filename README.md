@@ -18,7 +18,3 @@ This web application allows users to upload an image and identify the main color
 
 - An internet connection is required to load TensorFlow.js and the Teachable Machine model.
 
-## License
-
-This project is open-source and available under the MIT License.
-
