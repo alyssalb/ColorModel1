@@ -11,13 +11,14 @@
 <body>
     <h1>Color Identify Model</h1>
     <input type="file" id="image-upload" accept="image/*" onchange="handleImage(event)">
+    <button id="predict-button" onclick="predictImage()" disabled>Identify Color</button>
     <div id="image-container"></div>
     <div id="label-container"></div>
 
     <script type="text/javascript">
         const MODEL_URL = "https://teachablemachine.withgoogle.com/models/tDSvJj8yn/";
 
-        let model, labelContainer, maxPredictions;
+        let model, labelContainer, maxPredictions, selectedImage;
 
         async function init() {
             const modelURL = MODEL_URL + "model.json";
@@ -34,23 +35,29 @@
             }
         }
 
-        async function handleImage(event) {
+        function handleImage(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             const img = document.createElement("img");
             img.src = window.URL.createObjectURL(file);
-            img.onload = async function() {
+            img.onload = function() {
                 document.getElementById("image-container").innerHTML = "";
                 document.getElementById("image-container").appendChild(img);
-
-                // Predict the image
-                const prediction = await model.predict(img);
-                for (let i = 0; i < maxPredictions; i++) {
-                    const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                    labelContainer.childNodes[i].innerHTML = classPrediction;
-                }
+                selectedImage = img;
+                document.getElementById("predict-button").disabled = false;
             };
+        }
+
+        async function predictImage() {
+            if (!selectedImage) return;
+
+            // Predict the image
+            const prediction = await model.predict(selectedImage);
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
         }
 
         // Initialize the model when the page loads
