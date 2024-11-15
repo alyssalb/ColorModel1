@@ -15,13 +15,13 @@
     <div id="label-container"></div>
 
     <script type="text/javascript">
-        const URL = "https://teachablemachine.withgoogle.com/models/tDSvJj8yn/";
+        const MODEL_URL = "https://teachablemachine.withgoogle.com/models/tDSvJj8yn/";
 
         let model, labelContainer, maxPredictions;
 
         async function init() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
+            const modelURL = MODEL_URL + "model.json";
+            const metadataURL = MODEL_URL + "metadata.json";
 
             // Load the model
             model = await tmImage.load(modelURL, metadataURL);
@@ -39,7 +39,7 @@
             if (!file) return;
 
             const img = document.createElement("img");
-            img.src = URL.createObjectURL(file);
+            img.src = window.URL.createObjectURL(file);
             img.onload = async function() {
                 document.getElementById("image-container").innerHTML = "";
                 document.getElementById("image-container").appendChild(img);
