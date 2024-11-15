@@ -7,13 +7,22 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        #image-container img {
+            max-width: 200px;
+            max-height: 200px;
+        }
+        #label-container {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>Color Identify Model</h1>
     <input type="file" id="image-upload" accept="image/*" onchange="handleImage(event)">
     <button id="predict-button" onclick="predictImage()" disabled>Identify Color</button>
-    <div id="image-container"></div>
     <div id="label-container"></div>
+    <div id="image-container"></div>
 
     <script type="text/javascript">
         const MODEL_URL = "https://teachablemachine.withgoogle.com/models/tDSvJj8yn/";
@@ -54,9 +63,12 @@
 
             // Predict the image
             const prediction = await model.predict(selectedImage);
+            labelContainer.innerHTML = ""; // Clear previous predictions
             for (let i = 0; i < maxPredictions; i++) {
                 const classPrediction = prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                labelContainer.childNodes[i].innerHTML = classPrediction;
+                const predictionElement = document.createElement("div");
+                predictionElement.innerHTML = classPrediction;
+                labelContainer.appendChild(predictionElement);
             }
         }
 
